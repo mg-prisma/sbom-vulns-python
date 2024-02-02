@@ -21,7 +21,10 @@ def main():
     base_url = 'https://' + args.endpoint + '.prismacloud.io'
 
     if args.top_cvss:
-        list_top_cvss(base_url)
+        if args.repo_id == "":
+            print("ERROR: must provide value to --repo_id when using the --top_cvss flag")
+            exit(1)
+        list_top_cvss(base_url, args.repo_id)
     if args.list_repos:
         list_repositories(base_url)
     if args.code_issues:
@@ -63,12 +66,12 @@ def is_token_expired_or_absent(seconds_threshold):
         return True
     return False
 
-def list_top_cvss(base_url):
+def list_top_cvss(base_url, repo_id):
     token = get_auth_token(base_url)
     url = base_url + '/code/api/v2/dashboard/top-cvss'
     payload = json.dumps({
     "repositories": [
-        "1f5f51d5-86cb-4482-9aa8-6bd2398e6d5a"
+        repo_id
     ],
     "severities": [
         "CRITICAL"#, "HIGH", "MEDIUM", "LOW", "INFO"
